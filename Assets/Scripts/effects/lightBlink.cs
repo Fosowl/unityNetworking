@@ -20,7 +20,6 @@ public class lightBlink : MonoBehaviour
     {
         while (true)
         {
-            lightSource.enabled = !lightSource.enabled; // Toggle light on/off
             if (lightSource.enabled)
             {
                 lightSource.intensity = Random.Range(minIntensity, maxIntensity); // Randomize intensity

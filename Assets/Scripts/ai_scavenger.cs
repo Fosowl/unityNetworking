@@ -12,7 +12,7 @@ public class sensor_ray
 public class radar
 {
     public float interval = 45.0f; // angle interval between each ray
-    public float range = 5.0f; // range of the radar
+    public float range = 4.0f; // range of the radar
 
     public List<sensor_ray> scanAround(GameObject self)
     {
@@ -50,19 +50,20 @@ public class radar
 public class ai_scavenger : MonoBehaviour
 {
     public Animator animator;
+    public GameObject player;
     // private
     radar LIDAR = new radar();
     List<sensor_ray> radar_feedback;
-    float speed;
     private Vector3 m_Move;
-    public GameObject player;
+    private float speed = 4.5f;
+    private float rotationSpeed = 0.5f;
+    private float targetAngleSave = 0.0f;
 
     void Start()
     {
         LIDAR.interval = 15.0f;
         LIDAR.range = 4.0f;
         animator = GetComponent<Animator>();
-        speed = 4.0f;
     }
 
     void Update()
@@ -70,9 +71,16 @@ public class ai_scavenger : MonoBehaviour
         radar_feedback = LIDAR.scanAround(gameObject); 
         Vector3 playerPos = player.transform.position;
         float playerDistance = Vector3.Distance(playerPos, transform.position);
-        Quaternion targetRotation = decide(radar_feedback, playerPos, playerDistance);
-        Quaternion relativeRotation = Quaternion.Inverse(transform.rotation) * targetRotation;
-        transform.rotation = Quaternion.Slerp(transform.rotation, transform.rotation * relativeRotation, Time.deltaTime * speed);
+        float playerAngle = Mathf.Atan2(playerPos.x - transform.position.x, playerPos.z - transform.position.z) * Mathf.Rad2Deg;
+        Quaternion targetRotation = Quaternion.Euler(0, 0, 0);
+
+        if (playerDistance < 7.0f && playerDistance > 1.0f) {
+            Quaternion worldRotation = Quaternion.Euler(0, playerAngle, 0);
+            targetRotation = Quaternion.Inverse(transform.parent.rotation) * worldRotation;
+        } else {
+            targetRotation = decide(radar_feedback, playerPos, playerDistance);
+        }
+        transform.rotation = Quaternion.Slerp(transform.rotation, transform.rotation * targetRotation, Time.deltaTime * rotationSpeed);
         transform.Translate(Vector3.forward * Time.deltaTime * speed);
         if (playerDistance < 2.0f) {
             animator.Play("root|Anim_monster_scavenger_attack");
@@ -84,7 +92,7 @@ public class ai_scavenger : MonoBehaviour
     Quaternion decide(List<sensor_ray> feedback, Vector3 playerPos, float playerDistance)
     {
         Vector3 directionSum = Vector3.zero;
-        float closest = 10.0f;
+        float closest = 4.0f;
         float closestAngle = 0.0f;
         // obstacle avoidance
         foreach (sensor_ray sensor in feedback) {
@@ -93,14 +101,14 @@ public class ai_scavenger : MonoBehaviour
                 closestAngle = sensor.angle;
             }
         }
-        float playerAngle = Mathf.Atan2(playerPos.x - transform.position.x, playerPos.z - transform.position.z) * Mathf.Rad2Deg;
-        float opposite = 0.0f;
-        if (playerDistance < 8.0f) {
-            opposite = playerAngle;
-        } else {
-            opposite = closest < 3.0f ? closestAngle-90 : playerAngle;
+        float target = 0.0f;
+        float obstacleAngleOpposite = closestAngle+180;
+        if (obstacleAngleOpposite > 360) {
+            obstacleAngleOpposite -= 360;
         }
-        return Quaternion.Euler(0, opposite > 360 ? (opposite - 360) : opposite, 0);
+        target = obstacleAngleOpposite;
+        Debug.Log("Obstacle avoidance: " + target + " closest: " + closest);
+        return Quaternion.Euler(0, target, 0);
     }
 
 }
