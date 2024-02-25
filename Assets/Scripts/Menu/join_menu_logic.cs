@@ -6,7 +6,10 @@ using UnityEngine.SceneManagement;
 
 public class join_menu_logic : MonoBehaviour
 {
+    // menu
     public GameObject main_menu;
+    public GameObject lobby_menu;
+    // field
     public GameObject input_field_ip;
     public GameObject input_field_port;
 
@@ -26,6 +29,7 @@ public class join_menu_logic : MonoBehaviour
         PlayerPrefs.SetString("is_host", "false");
         PlayerPrefs.SetString("ip_client", input_field_ip.GetComponent<InputField>().text);
         PlayerPrefs.SetInt("port_client", int.Parse(input_field_port.GetComponent<InputField>().text));
-        SceneManager.LoadScene("game");
+        gameObject.active = false;
+        lobby_menu.active = true;
     }
 }

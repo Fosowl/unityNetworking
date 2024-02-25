@@ -60,7 +60,7 @@ public class ai_scavenger : MonoBehaviour
     void Start()
     {
         LIDAR.interval = 15.0f;
-        LIDAR.range = 5.0f;
+        LIDAR.range = 4.0f;
         animator = GetComponent<Animator>();
         speed = 4.0f;
     }
@@ -95,10 +95,10 @@ public class ai_scavenger : MonoBehaviour
         }
         float playerAngle = Mathf.Atan2(playerPos.x - transform.position.x, playerPos.z - transform.position.z) * Mathf.Rad2Deg;
         float opposite = 0.0f;
-        if (playerDistance < 7.0f) {
+        if (playerDistance < 8.0f) {
             opposite = playerAngle;
         } else {
-            opposite = closest < 5.0f ? closestAngle-90 : playerAngle;
+            opposite = closest < 3.0f ? closestAngle-90 : playerAngle;
         }
         return Quaternion.Euler(0, opposite > 360 ? (opposite - 360) : opposite, 0);
     }

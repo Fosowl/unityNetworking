@@ -6,7 +6,10 @@ using UnityEngine.SceneManagement;
 
 public class host_menu_logic : MonoBehaviour
 {
+    // menu
+    public GameObject lobby_menu;
     public GameObject main_menu;
+    // field
     public GameObject input_field_password;
     public GameObject input_field_port;
 
@@ -27,6 +30,7 @@ public class host_menu_logic : MonoBehaviour
         PlayerPrefs.SetString("is_host", "true");
         PlayerPrefs.SetString("password_host", input_field_password.GetComponent<InputField>().text);
         PlayerPrefs.SetInt("port_host", int.Parse(input_field_port.GetComponent<InputField>().text));
-        SceneManager.LoadScene("game");
+        gameObject.active = false;
+        lobby_menu.active = true;
     }
 }
