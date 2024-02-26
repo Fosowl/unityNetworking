@@ -6,13 +6,15 @@ using UnityEngine.SceneManagement;
 
 public class lobby_menu : MonoBehaviour
 {
-    // LOBBY LOGIC IS NOT THE SAME WHENEVER PLAYER IS HOST OR CLIENT
-    bool is_host;
+    // public
     public GameObject join_menu;
     public GameObject host_menu;
+    // private
+    bool is_host;
 
     void Start()
     {
+        // maybe different lobby logic for host and client idk but use this var if you need :)
         is_host = PlayerPrefs.GetString("is_host") == "true";
         Debug.Log("Is host?: " + is_host);
     }

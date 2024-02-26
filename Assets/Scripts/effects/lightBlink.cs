@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class lightBlink : MonoBehaviour
 {
+    // private
     private Light lightSource;
+    // public
     public float minWaitTime = 0.1f;
     public float maxWaitTime = 0.5f;
     public float minIntensity = 0f;

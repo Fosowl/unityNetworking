@@ -16,8 +16,8 @@ public class host_menu_logic : MonoBehaviour
     public GameObject input_field_max_players;
     // text
     public GameObject text_error;
-    // private
 
+    // private
     enum Error
     {
         NONE = 0,
@@ -162,6 +162,7 @@ public class host_menu_logic : MonoBehaviour
             default:
                 text_error.active = false;
                 gameObject.active = false;
+                // join lobby for network stuff
                 lobby_menu.active = true;
                 error_code = Error.NONE;
                 break;

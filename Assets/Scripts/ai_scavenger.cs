@@ -49,11 +49,12 @@ public class radar
 
 public class ai_scavenger : MonoBehaviour
 {
+    // public
     public Animator animator;
-    public GameObject player;
     // private
-    radar LIDAR = new radar();
-    List<sensor_ray> radar_feedback;
+    private Transform player;
+    private radar LIDAR = new radar();
+    private List<sensor_ray> radar_feedback;
     private Vector3 m_Move;
     private float speed = 4.5f;
     private float rotationSpeed = 0.5f;
@@ -66,8 +67,21 @@ public class ai_scavenger : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
+    // find player in scene because player object appear only when connected ?
+    void FindPlayer()
+    {
+        GameObject playerGameObject = GameObject.FindWithTag("Player");
+        if (playerGameObject != null) {
+            player = playerGameObject.transform;
+        }
+    }
+
     void Update()
     {
+        if (player == null) {
+            FindPlayer();
+            return;
+        }
         radar_feedback = LIDAR.scanAround(gameObject); 
         Vector3 playerPos = player.transform.position;
         float playerDistance = Vector3.Distance(playerPos, transform.position);
@@ -107,8 +121,6 @@ public class ai_scavenger : MonoBehaviour
             obstacleAngleOpposite -= 360;
         }
         target = obstacleAngleOpposite;
-        Debug.Log("Obstacle avoidance: " + target + " closest: " + closest);
         return Quaternion.Euler(0, target, 0);
     }
-
 }

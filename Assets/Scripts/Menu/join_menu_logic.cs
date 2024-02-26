@@ -183,6 +183,7 @@ public class join_menu_logic : MonoBehaviour
             default:
                 text_error.active = false;
                 gameObject.active = false;
+                // join lobby where network stuff start to happen
                 lobby_menu.active = true;
                 error_code = Error.NONE;
                 break;

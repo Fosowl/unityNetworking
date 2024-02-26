@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class main_menu_logic : MonoBehaviour
 {
+    // public
     public GameObject host_menu;
     public GameObject join_menu;
     public GameObject settings_menu;
