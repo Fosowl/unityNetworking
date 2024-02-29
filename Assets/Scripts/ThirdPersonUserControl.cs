@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 using Mirror;
+using UnityEngine.UI;
 
 namespace UnityStandardAssets.Characters.ThirdPerson
 {
@@ -11,6 +12,8 @@ namespace UnityStandardAssets.Characters.ThirdPerson
     //public class ThirdPersonUserControl : NetworkBehaviour
     public class ThirdPersonUserControl : MonoBehaviour
     {
+        // public
+        public Slider healthSlider;
         // private
         private ThirdPersonCharacter m_Character; 
         private Transform m_Cam;                  
@@ -28,6 +31,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
             }
             m_Character = GetComponent<ThirdPersonCharacter>();
             gameObject.tag = "Player";
+            healthSlider.value = 105f;
         }
 
         private void FixedUpdate()
@@ -49,5 +53,16 @@ namespace UnityStandardAssets.Characters.ThirdPerson
             m_Character.Move(m_Move, false, m_Jump);
             m_Jump = false;
         }
+
+        void onTriggerEnter(Collider other) {
+            if (other.tag == "medikit") {
+                healthSlider.value += 50f;
+                if (healthSlider.value > 100f) {
+                    healthSlider.value = 100f;
+                }
+                Debug.Log("Health increased");
+            }
+        }
+
     }
 }
