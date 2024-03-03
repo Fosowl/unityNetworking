@@ -13,7 +13,6 @@ public class canvas_check_pause : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape)) {
             pause_menu.active = true;
-            Time.timeScale = 0;
         }
     }
 }

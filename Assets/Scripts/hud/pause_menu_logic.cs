@@ -13,12 +13,10 @@ public class pause_menu_logic : MonoBehaviour
     public void resume_button()
     {
         gameObject.active = false;
-        Time.timeScale = 1;
     }
 
     public void back_to_menu_button()
     {
-        Time.timeScale = 1;
         SceneManager.LoadScene("menu");
     }
 
