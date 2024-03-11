@@ -25,7 +25,7 @@ public class IA_LineOfSight : MonoBehaviour
     [SerializeField] private float attackDistance = 3.5f;
     [SerializeField] private float loseDistance = 14f;
 
-    float tmp;
+    bool tmp = false;
 
     private void Awake()
     {
@@ -62,6 +62,7 @@ public class IA_LineOfSight : MonoBehaviour
             StopCoroutine(detect_player);
             agent.ResetPath();
             isChasing = false;
+            tmp = false;
         }
     }
 
@@ -107,15 +108,20 @@ public class IA_LineOfSight : MonoBehaviour
 
     void GoToPlayer()
     {
-        tmp = agent.remainingDistance;
+       // tmp = agent.remainingDistance;
         if (agent.hasPath && agent.remainingDistance <= attackDistance)
         {
             animator.Play("root|Anim_monster_scavenger_attack");
+            tmp = false;
             agent.isStopped = true;
         }
         else
         {
-            animator.Play("root|Anim_monster_scavenger_walk");
+            if (tmp == false)
+            {
+                animator.Play("root|Anim_monster_scavenger_walk");
+                tmp = true;
+            }
             agent.isStopped = false;
         }
         agent.SetDestination(target.transform.position);
