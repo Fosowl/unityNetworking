@@ -6,11 +6,12 @@ TagManager:
   tags:
   - Door
   - medikit
+  - damage
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Wall
   - Water
   - UI
   - 
