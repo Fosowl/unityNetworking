@@ -137,15 +137,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1884066084654045317, guid: 5e77d823448aad846a62f89958646765, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1884066084654045562, guid: 5e77d823448aad846a62f89958646765, type: 3}
       propertyPath: onlineScene
-      value: 
+      value: Assets/Scenes/game.unity
       objectReference: {fileID: 0}
     - target: {fileID: 1884066084654045562, guid: 5e77d823448aad846a62f89958646765, type: 3}
       propertyPath: offlineScene
+      value: Assets/Scenes/menu.unity
+      objectReference: {fileID: 0}
+    - target: {fileID: 1884066084654045562, guid: 5e77d823448aad846a62f89958646765, type: 3}
+      propertyPath: playerPrefab
       value: 
+      objectReference: {fileID: 7372116599668988154, guid: 74f7d10d9b92c461590f8c17e35ffbad, type: 3}
+    - target: {fileID: 1884066084654045562, guid: 5e77d823448aad846a62f89958646765, type: 3}
+      propertyPath: autoCreatePlayer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1884066084654045563, guid: 5e77d823448aad846a62f89958646765, type: 3}
       propertyPath: m_RootOrder
@@ -1606,7 +1614,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &442559517
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3808,7 +3816,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: ' 1 to 100 max players'
+  m_Text: ' 1 to 4 max players'
 --- !u!222 &938927279
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7017,7 +7025,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1935350557
 RectTransform:
   m_ObjectHideFlags: 0

@@ -9,6 +9,9 @@ public class main_menu_logic : MonoBehaviour
     public GameObject join_menu;
     public GameObject settings_menu;
 
+    // CHANGE
+    [SerializeField] private NetworkManagerLobby networkManager = null;
+
     void Start()
     {
         gameObject.active = true;        

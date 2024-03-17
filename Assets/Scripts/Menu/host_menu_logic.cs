@@ -17,6 +17,9 @@ public class host_menu_logic : MonoBehaviour
     // text
     public GameObject text_error;
 
+    // CHANGE
+    [SerializeField] private NetworkManagerLobby networkManager = null;
+
     // private
     enum Error
     {
@@ -162,8 +165,10 @@ public class host_menu_logic : MonoBehaviour
             default:
                 text_error.active = false;
                 gameObject.active = false;
-                // join lobby for network stuff
                 lobby_menu.active = true;
+                // that's it ? check working
+                Debug.Log("Starting as host...");
+                networkManager.StartHost();
                 error_code = Error.NONE;
                 break;
         }
