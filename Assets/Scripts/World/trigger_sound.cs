@@ -13,7 +13,7 @@ public class trigger_sound : MonoBehaviour
     }
 
     void OnTriggerEnter(Collider other) {
-        if (other.tag != "Player") {
+        if (other.tag != "PlayerMain") {
             return;
         }
 		GetComponent<AudioSource>().Play();

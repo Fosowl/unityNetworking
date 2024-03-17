@@ -1031,7 +1031,7 @@ namespace Mirror
                 return false;
             }
 
-            // Debug.Log($"NetworkClient.AddPlayer() called with connection {readyConnection}");
+            Debug.Log($"NetworkClient.AddPlayer() called with connection {connection}");
             connection.Send(new AddPlayerMessage());
             return true;
         }

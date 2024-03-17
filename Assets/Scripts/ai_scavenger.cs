@@ -70,7 +70,7 @@ public class ai_scavenger : MonoBehaviour
     // find player in scene because player object appear only when connected ?
     void FindPlayer()
     {
-        GameObject playerGameObject = GameObject.FindWithTag("Player");
+        GameObject playerGameObject = GameObject.FindWithTag("PlayerMain");
         if (playerGameObject != null) {
             player = playerGameObject.transform;
         }

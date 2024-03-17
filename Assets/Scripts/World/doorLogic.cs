@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using Mirror;
 
 public class doorLogic : MonoBehaviour
 {
@@ -19,20 +20,19 @@ public class doorLogic : MonoBehaviour
 
     void Start()
     {
+        textBox.text = "";
     }
 
     void OnTriggerEnter(Collider other) {
-        if (other.tag != "Player") {
+        if (other.tag != "PlayerMain") {
             return;
         }
+        Debug.Log("Door hit by " + other.tag);
         textBox.text = "[ Press 'E' to open the door ]";
         onDoor = true;
     }
 
     void OnTriggerExit(Collider other) {
-        if (other.tag != "Player") {
-            return;
-        }
         textBox.text = "";
         onDoor = false;
         checkingCode = false;

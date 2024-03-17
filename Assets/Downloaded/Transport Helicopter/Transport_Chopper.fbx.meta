@@ -9,7 +9,7 @@ labels:
 - weapon
 - twin-engine
 ModelImporter:
-  serializedVersion: 22200
+  serializedVersion: 22102
   internalIDToNameTable:
   - first:
       43: 4300000
@@ -20,6 +20,9 @@ ModelImporter:
   - first:
       43: 4300004
     second: Back_Rotor
+  - first:
+      74: -4506558747437489242
+    second: Fly
   externalObjects: {}
   materials:
     materialImportMode: 1
@@ -86,7 +89,6 @@ ModelImporter:
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
-    importPhysicalCameras: 0
     importVisibility: 0
     importBlendShapes: 1
     importCameras: 0
@@ -148,7 +150,6 @@ ModelImporter:
   avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 0
   importBlendShapeDeformPercent: 0
-  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

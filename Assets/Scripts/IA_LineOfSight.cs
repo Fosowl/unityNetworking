@@ -37,7 +37,7 @@ public class IA_LineOfSight : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Player" && !target)
+        if ((other.tag == "Player" || other.tag == "PlayerMain") && !target)
         {
             target = other.gameObject;
             detect_player = StartCoroutine(DetectPlayer());

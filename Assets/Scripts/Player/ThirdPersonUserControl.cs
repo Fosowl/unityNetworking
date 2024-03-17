@@ -9,11 +9,11 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 	[RequireComponent(typeof(Rigidbody))]
 	[RequireComponent(typeof(CapsuleCollider))]
 	[RequireComponent(typeof(Animator))]
-    //public class ThirdPersonUserControl : NetworkBehaviour
-    public class ThirdPersonUserControl : MonoBehaviour
+    public class ThirdPersonUserControl : NetworkBehaviour
+    //public class ThirdPersonUserControl : MonoBehaviour
     {
         // public
-        public Slider healthSlider;
+        //public Slider healthSlider;
         // private
         private ThirdPersonCharacter m_Character; 
         private Transform m_Cam;                  
@@ -23,6 +23,10 @@ namespace UnityStandardAssets.Characters.ThirdPerson
         
         private void Start()
         {
+            if (!isLocalPlayer) {
+                Debug.Log("Warning: Player not on network, comment code if testing without network.");
+                return;
+            }
             m_Jump = false;
             if (Camera.main != null) {
                 m_Cam = Camera.main.transform;
@@ -30,16 +34,16 @@ namespace UnityStandardAssets.Characters.ThirdPerson
                 Debug.LogWarning("Warning: no main camera found.");
             }
             m_Character = GetComponent<ThirdPersonCharacter>();
-            gameObject.tag = "Player";
-            healthSlider.value = 105f;
+            gameObject.tag = "PlayerMain";
+            //healthSlider.value = 105f;
         }
 
         private void FixedUpdate()
         {
-            //if (!isLocalPlayer) {
-            //    Debug.Log("Warning: Player not on network, comment code if testing without network.");
-            //    return;
-            //}
+            if (!isLocalPlayer) {
+                Debug.Log("Warning: Player not on network, comment code if testing without network.");
+                return;
+            }
 
             float h = CrossPlatformInputManager.GetAxis("Horizontal");
             float v = CrossPlatformInputManager.GetAxis("Vertical");
@@ -53,16 +57,5 @@ namespace UnityStandardAssets.Characters.ThirdPerson
             m_Character.Move(m_Move, false, m_Jump);
             m_Jump = false;
         }
-
-        void onTriggerEnter(Collider other) {
-            if (other.tag == "medikit") {
-                healthSlider.value += 50f;
-                if (healthSlider.value > 100f) {
-                    healthSlider.value = 100f;
-                }
-                Debug.Log("Health increased");
-            }
-        }
-
     }
 }

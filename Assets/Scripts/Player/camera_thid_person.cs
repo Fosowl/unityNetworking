@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class camera_thid_person : MonoBehaviour
 {
@@ -8,7 +9,7 @@ public class camera_thid_person : MonoBehaviour
     private Transform player;
     public float distance = 5.0f;
     public float height = 2.0f;
-    public float followSpeed = 10.0f;
+    public float followSpeed = 15.0f;
     // private
     private Vector3 offset;
 
@@ -31,12 +32,16 @@ public class camera_thid_person : MonoBehaviour
 
     void FindPlayer()
     {
-        GameObject playerGameObject = GameObject.FindWithTag("Player");
-        if (playerGameObject != null) {
-            player = playerGameObject.transform;
-            Debug.Log("Camera found player.");
-        } else {
-            Debug.Log("Warning: camera can't find player.");
+        try {
+            GameObject playerGameObject = GameObject.FindWithTag("PlayerMain");
+            if (playerGameObject != null) {
+                player = playerGameObject.transform;
+                Debug.Log("Camera found player.");
+            } else {
+                Debug.Log("Warning: camera can't find player.");
+            }
+        } catch (Exception ex) {
+            Debug.Log("Searching for PlayerMain in scene...");
         }
     }
 }
