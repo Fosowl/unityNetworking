@@ -10,11 +10,11 @@ public class main_menu_logic : MonoBehaviour
     public GameObject settings_menu;
 
     // CHANGE
-    [SerializeField] private NetworkManagerLobby networkManager = null;
+    [SerializeField] private MyNetworkManager networkManager = null;
 
     void Start()
     {
-        gameObject.active = true;        
+        gameObject.SetActive(true);        
         host_menu.active = false; 
         join_menu.active = false;
         settings_menu.active = false;
@@ -22,13 +22,13 @@ public class main_menu_logic : MonoBehaviour
 
     public void join_button()
     {
-        gameObject.active = false;
+        gameObject.SetActive(false);
         join_menu.active = true;
     }
 
     public void host_button()
     {
-        gameObject.active = false;
+        gameObject.SetActive(false);
         host_menu.active = true;
     }
 

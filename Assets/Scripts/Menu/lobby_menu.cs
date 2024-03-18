@@ -14,14 +14,13 @@ public class lobby_menu : MonoBehaviour
 
     void Start()
     {
-        // maybe different lobby logic for host and client idk but use this var if you need :)
         is_host = PlayerPrefs.GetString("is_host") == "true";
         Debug.Log("Is host?: " + is_host);
     }
 
     public void back_button()
     {
-        gameObject.active = false;
+        gameObject.SetActive(false);
         if (is_host) {
             Debug.Log("Host is leaving lobby...");
             host_menu.active = true;

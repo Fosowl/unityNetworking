@@ -18,7 +18,7 @@ public class host_menu_logic : MonoBehaviour
     public GameObject text_error;
 
     // CHANGE
-    [SerializeField] private NetworkManagerLobby networkManager = null;
+    [SerializeField] private MyNetworkManager networkManager = null;
 
     // private
     enum Error
@@ -40,7 +40,7 @@ public class host_menu_logic : MonoBehaviour
 
     public void back_button()
     {
-        gameObject.active = false;
+        gameObject.SetActive(false);
         main_menu.active = true;
     }
 
@@ -125,7 +125,7 @@ public class host_menu_logic : MonoBehaviour
         }
     }
 
-    void check_password(string password)
+    void set_password(string password)
     {
         if (error_code != Error.NONE && error_code != Error.PASSWORD_FORMAT) {
             return;
@@ -134,7 +134,8 @@ public class host_menu_logic : MonoBehaviour
         // TODO: check password correct
         error_code = Error.NONE;
         // TODO: encrypt password
-        PlayerPrefs.SetString("password_client", password);
+        string hash_password = password;
+        PlayerPrefs.SetString("password_client", hash_password);
     }
 
     public void host_game_button()
@@ -143,7 +144,7 @@ public class host_menu_logic : MonoBehaviour
         set_host(true);
         set_port(input_field_port.GetComponent<InputField>().text);
         set_username(input_field_username.GetComponent<InputField>().text);
-        check_password(input_field_password.GetComponent<InputField>().text);
+        set_password(input_field_password.GetComponent<InputField>().text);
         set_max_players(input_field_max_players.GetComponent<InputField>().text);
         switch (error_code)
         {
@@ -164,7 +165,7 @@ public class host_menu_logic : MonoBehaviour
                 break;
             default:
                 text_error.active = false;
-                gameObject.active = false;
+                gameObject.SetActive(false);
                 lobby_menu.active = true;
                 // that's it ? check working
                 Debug.Log("Starting as host...");

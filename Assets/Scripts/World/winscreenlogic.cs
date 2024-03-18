@@ -7,7 +7,7 @@ public class winscreenlogic : MonoBehaviour
 {
     void Start()
     {
-        gameObject.active = false;
+        gameObject.SetActive(false);
     }
 
     public void back_to_lobby_button()

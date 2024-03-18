@@ -22,7 +22,7 @@ public class join_menu_logic : MonoBehaviour
     // private
 
     // CHANGE
-    [SerializeField] private NetworkManagerLobby networkManager = null;
+    [SerializeField] private MyNetworkManager networkManager = null;
 
     enum Error
     {
@@ -43,7 +43,7 @@ public class join_menu_logic : MonoBehaviour
 
     public void back_button()
     {
-        gameObject.active = false;
+        gameObject.SetActive(false);
         main_menu.active = true;
     }
 
@@ -60,7 +60,8 @@ public class join_menu_logic : MonoBehaviour
             return false;
         }
         foreach (string part in parts) {
-            if (!int.TryParse(part, out int parsedPart)) {
+            int parsedPart = 0;
+            if (!int.TryParse(part, out parsedPart)) {
                 return false;
             }
             if (parsedPart < 0 || parsedPart > 255) {
@@ -76,70 +77,70 @@ public class join_menu_logic : MonoBehaviour
     string set_ip(string ip)
     {
         if (error_code != Error.NONE && error_code != Error.IP) {
-            return null;
+            return "";
         }
         if (ip.Length < 7 || ip.Length > 15) {
             error_code = Error.IP;
             Debug.Log("ERROR: Invalid IP length");
-            return null;
+            return "";
         }
         if (ip[0] == '.' || ip[ip.Length - 1] == '.') {
             error_code = Error.IP;
             Debug.Log("ERROR: Invalid IP format");
-            return null;
+            return "";
         }
         if (!IsValidIPv4(ip)) {
             error_code = Error.IP;
             Debug.Log("ERROR: Invalid IPv4");
-            return null;
+            return "";
         }
         error_code = Error.NONE;
         PlayerPrefs.SetString("ip_client", ip);
         return ip;
     }
 
-    string set_port(string port_str)
+    int set_port(string port_str)
     {
         int port;
 
         if (error_code != Error.NONE && error_code != Error.PORT) {
-            return null;
+            return -1;
         }
 
         if (!int.TryParse(port_str, out port)) {
             error_code = Error.PORT;
             Debug.Log("ERROR: port is not a number");
-            return null;
+            return -1;
         }
         if (port < 1024 || port > 65535) {
             error_code = Error.PORT;
             Debug.Log("ERROR: Invalid port range");
-            return null;
+            return -1;
         }
         error_code = Error.NONE;
         PlayerPrefs.SetInt("port_client", port);
-        return port
+        return port;
     }
 
     string set_username(string username)
     {
         if (error_code != Error.NONE && error_code != Error.USERNAME) {
-            return null;
+            return "";
         }
 
         if (username.Length < 3 || username.Length > 15) {
             Debug.Log("ERROR: Invalid username length");
             error_code = Error.USERNAME;
-            return null;
+            return "";
         }
         if (username.Contains(" ")) {
             Debug.Log("ERROR: Username canoot contains space");
             error_code = Error.USERNAME;
-            return null;
+            return "";
         }
         error_code = Error.NONE;
         PlayerPrefs.SetString("username", username);
-        return username
+        return username;
     }
 
     bool set_host(bool is_host)
@@ -150,70 +151,26 @@ public class join_menu_logic : MonoBehaviour
         else {
             PlayerPrefs.SetString("is_host", "false");
         }
-        return is_host
+        return is_host;
     }
 
-    string check_password(string password)
+    string hash_password(string password)
     {
         if (error_code != Error.NONE && error_code != Error.PASSWORD_FORMAT) {
-            return;
+            return "";
         }
-
-        // TODO: check password correct
-        error_code = Error.NONE;
-        // TODO: encrypt password
-        PlayerPrefs.SetString("password_client", password);
-    }
-
-    string check_password(string password)
-    {
-        if (error_code != Error.NONE && error_code != Error.PASSWORD_FORMAT) {
-            return;
-        }
-        string passwordPattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$";
-        if (!Regex.IsMatch(password, passwordPattern)) {
-            error_code = Error.PASSWORD_FORMAT;
-            return null;
-        }
-        error_code = Error.NONE;
-        Debug.Log("Hashing password...");
-        string salt = GenerateSalt();
-        string hashedPassword = HashPassword(password, salt);
-        PlayerPrefs.SetString("password_client_hash", hashedPassword);
-        PlayerPrefs.SetString("password_client_s")
+        string hashedPassword = password;
         return hashedPassword;
-    }
-
-    private string GenerateSalt()
-    {
-        byte[] saltBytes = new byte[16];
-        using (var rng = new RNGCryptoServiceProvider())
-        { 
-            rng.GetBytes(saltBytes);
-        }
-        return Convert.ToBase64String(saltBytes);
-    }
-
-    private string HashPassword(string password, string salt)
-    {
-        byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
-        byte[] saltBytes = Convert.FromBase64String(salt);
-
-        using (var pbkdf2 = new Rfc2898DeriveBytes(passwordBytes, saltBytes, 10000))
-        {
-            byte[] hashBytes = pbkdf2.GetBytes(32);
-            return Convert.ToBase64String(hashBytes);
-        }
     }
 
     public void join_button()
     {
         Debug.Log("Joining game...");
-        set_host(false);
+        bool is_host = set_host(false);
         string ip = set_ip(input_field_ip.GetComponent<InputField>().text);
-        string port = set_port(input_field_port.GetComponent<InputField>().text);
+        int port = set_port(input_field_port.GetComponent<InputField>().text);
         string username = set_username(input_field_username.GetComponent<InputField>().text);
-        string passwordHashed = check_password(input_field_password.GetComponent<InputField>().text);
+        string passwordHashed = hash_password(input_field_password.GetComponent<InputField>().text);
 
         switch (error_code)
         {
@@ -235,31 +192,27 @@ public class join_menu_logic : MonoBehaviour
             default:
                 text_error.active = false;
                 gameObject.active = false;
-                JoinLobby(ip, port);
+                JoinLobby(is_host, ip, port, username, passwordHashed);
                 lobby_menu.active = true;
                 error_code = Error.NONE;
                 break;
         }
     }
 
-    public void JoinLobby(string ip, string port)
+    public void JoinLobby(bool host, string ip, int port, string username, string passwordHashed)
     {
         networkManager.networkAddress = ip;
-        networkManager.networkPort = port;
+        //networkManager.networkPort = port;
+
+        //NetworkManager networkManager = FindObjectOfType<NetworkManager>();
+        //KcpTransport kcpTransport = networkManager.GetComponent<KcpTransport>();
+        //if (kcpTransport != null) {
+        //    kcpTransport.Port = port;
+        //    Debug.Log("KCP Transport port changed to: " + kcpTransport.Port);
+        //}
+        //else {
+        //    Debug.LogWarning("KCP Transport component not found on NetworkManager.");
+        //}
         networkManager.StartClient();
-    }
-
-    private void OnEnable()
-    {
-        // subcribe event
-        NetworkManagerLobby.OnClientConnected += HandleClientConnected;
-        NetworkManagerLobby.OnClientDisconnected += HandleClientDisconnected;
-    }
-
-    private void OnDisable()
-    {
-        // unsubcribe event
-        NetworkManagerLobby.OnClientConnected -= HandleClientConnected;
-        NetworkManagerLobby.OnClientDisconnected -= HandleClientDisconnected;
     }
 }
