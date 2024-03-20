@@ -7,6 +7,9 @@ TagManager:
   - Door
   - medikit
   - damage
+  - PlayerMain
+  - Wall
+  - localVarObj
   layers:
   - Default
   - TransparentFX

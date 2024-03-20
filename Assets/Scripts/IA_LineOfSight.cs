@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 using UnityEngine.AI;
 using UnityEngine.PlayerLoop;
 using UnityEngine.UIElements;
 
 [RequireComponent(typeof(SphereCollider))]
 
-public class IA_LineOfSight : MonoBehaviour
+public class IA_LineOfSight : NetworkBehaviour
 {
     [SerializeField] private GameObject target;
     [SerializeField] private float detection_delay = 0.5f;
@@ -35,6 +36,7 @@ public class IA_LineOfSight : MonoBehaviour
         animator.Play("root|Anim_monster_scavenger_Idle1");
     }
 
+    [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
         if ((other.tag == "Player" || other.tag == "PlayerMain") && !target)
@@ -45,13 +47,7 @@ public class IA_LineOfSight : MonoBehaviour
         }
     }
 
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.tag == "Player")
-        {
-        }
-    }
-
+    [Server]
     private void LoseTarget()
     {
         if (agent.remainingDistance >= loseDistance)

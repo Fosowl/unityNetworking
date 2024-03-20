@@ -1,3 +1,4 @@
+using Mirror;
 using UnityEngine;
 
 namespace UnityStandardAssets.Characters.ThirdPerson
@@ -5,7 +6,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(CapsuleCollider))]
     [RequireComponent(typeof(Animator))]
-    public class ThirdPersonCharacter : MonoBehaviour
+    public class ThirdPersonCharacter : NetworkBehaviour
     {
         [SerializeField] float m_MovingTurnSpeed = 360;
         [SerializeField] float m_StationaryTurnSpeed = 180;
@@ -39,6 +40,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
             m_OrigGroundCheckDistance = m_GroundCheckDistance;
         }
 
+        [Command]
         public void Move(Vector3 move, bool crouch, bool jump)
         {    
             if (move.magnitude > 1f) move.Normalize();
@@ -99,8 +101,9 @@ namespace UnityStandardAssets.Characters.ThirdPerson
                 v.y = m_Rigidbody.velocity.y;
                 m_Rigidbody.velocity = v;
             }
-        }    
+        }
 
+        [Client]
         void CheckGroundStatus()
         {
             RaycastHit hitInfo;
