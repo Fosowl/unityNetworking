@@ -8,8 +8,10 @@ public partial class PlayerNetwork
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
-
+        SetLife(3);
     }
+
+    #region SyncVar Hooks
 
     [Client]
     private void OnPlayerLifeChanged(int oldLife, int newLife)
@@ -22,4 +24,7 @@ public partial class PlayerNetwork
     {
         this.pseudoUI.text = newPseudo;
     }
+
+    #endregion
+
 }
