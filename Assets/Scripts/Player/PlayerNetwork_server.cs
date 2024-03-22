@@ -10,4 +10,14 @@ public partial class PlayerNetwork
 
     [Server]
     public void SetLife(int newLife) => this._playerLife = newLife;
+
+    [ServerCallback]
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("damage"))
+        {
+            SetLife(this._playerLife - 1);
+        }
+    }
 }
