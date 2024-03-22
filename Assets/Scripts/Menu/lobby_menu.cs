@@ -21,14 +21,14 @@ public class lobby_menu : MonoBehaviour
 
     public void back_button()
     {
-        gameObject.active = false;
+        gameObject.SetActive(false);
         if (is_host) {
             Debug.Log("Host is leaving lobby...");
-            host_menu.active = true;
+            host_menu.SetActive(true);
         }
         else {
             Debug.Log("Client is leaving lobby...");
-            join_menu.active = true;
+            join_menu.SetActive(true);
         }
     }
 

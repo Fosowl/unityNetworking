@@ -11,28 +11,28 @@ public class main_menu_logic : MonoBehaviour
 
     void Start()
     {
-        gameObject.active = true;        
-        host_menu.active = false; 
-        join_menu.active = false;
-        settings_menu.active = false;
+        gameObject.SetActive(true);        
+        host_menu.SetActive(false); 
+        join_menu.SetActive(false);
+        settings_menu.SetActive(false);
     }
 
     public void join_button()
     {
-        gameObject.active = false;
-        join_menu.active = true;
+        gameObject.SetActive(false);
+        join_menu.SetActive(true);
     }
 
     public void host_button()
     {
-        gameObject.active = false;
-        host_menu.active = true;
+        gameObject.SetActive(false);
+        host_menu.SetActive(true);
     }
 
     public void settings_button()
     {
-        gameObject.active = false;
-        settings_menu.active = true;
+        gameObject.SetActive(false);
+        settings_menu.SetActive(true);
     }
 
     public void quit_button()

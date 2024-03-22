@@ -32,18 +32,18 @@ public class join_menu_logic : MonoBehaviour
 
     void Start()
     {
-        text_error.active = false;
+        text_error.SetActive(false);
     }
 
     public void back_button()
     {
-        gameObject.active = false;
-        main_menu.active = true;
+        gameObject.SetActive(false);
+        main_menu.SetActive(true);
     }
 
     void fill_error(string error)
     {
-        text_error.active = true;
+        text_error.SetActive(true);
         text_error.GetComponent<Text>().text = error;
     }
 
@@ -181,10 +181,10 @@ public class join_menu_logic : MonoBehaviour
                 fill_error("Incorrect PASSWORD");
                 break;
             default:
-                text_error.active = false;
-                gameObject.active = false;
+                text_error.SetActive(false);
+                gameObject.SetActive(false);
                 // join lobby where network stuff start to happen
-                lobby_menu.active = true;
+                lobby_menu.SetActive(true);
                 error_code = Error.NONE;
                 break;
         }
