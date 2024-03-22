@@ -6,81 +6,39 @@ using Mirror;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Map Set", menuName = "Rounds/Map Set")]
-public class MapSet : ScriptableObject
-{
-    [Scene]
-    [SerializeField] private List<string> maps = new List<string>();
-
-    public IReadOnlyCollection<string> Maps => maps.AsReadOnly();
-}
-
-// move to other file ?
-public class MapHandler
-{
-    private readonly IReadOnlyCollection<string> maps;
-    private readonly int numberOfRounds;
-
-    private int currentRound;
-    private List<string> remainingMaps;
-
-    public MapHandler(MapSet mapSet, int numberOfRounds)
-    {
-        maps = mapSet.Maps;
-        this.numberOfRounds = numberOfRounds;
-        ResetMaps();
-    }
-
-    public bool IsComplete => currentRound == numberOfRounds;
-
-    public string NextMap
-    {
-        get
-        {
-            if (IsComplete) { return null; }
-            currentRound++;
-            if (remainingMaps.Count == 0) { ResetMaps(); }
-            string map = remainingMaps[UnityEngine.Random.Range(0, remainingMaps.Count)];
-            remainingMaps.Remove(map);
-            return map;
-        }
-    }
-    private void ResetMaps() => remainingMaps = maps.ToList();
-}
-
+// network manager for lobby is a room that contain //GamePlayers
 public class MyNetworkManager : NetworkManager
 {
-    [SerializeField] private int minPlayers = 2;
-    [Scene] [SerializeField] private string menuScene = string.Empty;
+    [SerializeField] public int minPlayers = 2;
 
-    [Header("Maps")]
-    [SerializeField] private int numberOfRounds = 1;
-    [SerializeField] private MapSet mapSet = null;
+    [SerializeField] public GameObject gamePlayerPrefab = null;
+    [SerializeField] public GameObject lobbyPlayerPrefab = null;
+    [SerializeField] public GameObject playerSpawnSystem = null;
 
-    [Header("Room")]
-    [SerializeField] private NetworkRoomPlayerLobby roomPlayerPrefab = null;
+    [SerializeField] public static event Action OnClientConnected;
+    [SerializeField] public static event Action OnClientDisconnected;
+    [SerializeField] public static event Action<NetworkConnection> OnServerReadied;
+    [SerializeField] public static event Action OnServerStopped;
 
-    [Header("Game")]
-    //[SerializeField] private NetworkGamePlayerLobby gamePlayerPrefab = null;
-    [SerializeField] private GameObject playerSpawnSystem = null;
-    [SerializeField] private GameObject roundSystem = null;
+    bool is_host;
 
-    private MapHandler mapHandler;
+    // either lobby_menu or 2 class : one for lobby player and one for actual game player
+    // unity should find other script like lobby_menu by default without error but get error why ???????
 
-    public static event Action OnClientConnected;
-    public static event Action OnClientDisconnected;
-    public static event Action<NetworkConnection> OnServerReadied;
-    public static event Action OnServerStopped;
+    public List<lobby_menu> LobbyPlayers { get; } = new List<lobby_menu>();
+    public List<lobby_menu> GamePlayers { get; } = new List<lobby_menu>();
 
-    public List<NetworkRoomPlayerLobby> RoomPlayers { get; } = new List<NetworkRoomPlayerLobby>();
-
-    public override void OnStartServer() => spawnPrefabs = Resources.LoadAll<GameObject>("SpawnablePrefabs").ToList();
+    public override void OnStartServer()
+    {
+        spawnPrefabs = Resources.LoadAll<GameObject>("SpawnablePrefabs").ToList();
+    }
 
     public override void OnStartClient()
     {
         var spawnablePrefabs = Resources.LoadAll<GameObject>("SpawnablePrefabs");
 
         foreach (var prefab in spawnablePrefabs) {
+            Debug.Log("Registering prefab...");
             NetworkClient.RegisterPrefab(prefab);
         }
     }
@@ -102,11 +60,7 @@ public class MyNetworkManager : NetworkManager
     public override void OnServerConnect(NetworkConnectionToClient conn)
     {
         if (numPlayers >= maxConnections) {
-            conn.Disconnect();
-            return;
-        }
-
-        if (SceneManager.GetActiveScene().name != menuScene) {
+            Debug.Log("numPlayers >= maxConnection, disconnecting...");
             conn.Disconnect();
             return;
         }
@@ -114,20 +68,23 @@ public class MyNetworkManager : NetworkManager
 
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
-        if (SceneManager.GetActiveScene().name == menuScene) {
-            bool isLeader = RoomPlayers.Count == 0;
-
-            NetworkRoomPlayerLobby roomPlayerInstance = Instantiate(roomPlayerPrefab);
-            roomPlayerInstance.IsLeader = isLeader;
-            NetworkServer.AddPlayerForConnection(conn, roomPlayerInstance.gameObject);
+        if (SceneManager.GetActiveScene().path == "scene:Assets/Scenes/menu.unity") {
+            if (lobbyPlayerPrefab == null) {
+                Debug.Log("lobbyPlayerPrefab is null");
+                return;
+            }
+            GameObject lobbyPlayerInstance = Instantiate(lobbyPlayerPrefab);
+            Debug.Log("Adding player for connection...");
+            NetworkServer.AddPlayerForConnection(conn, lobbyPlayerInstance);
         }
     }
 
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
     {
         if (conn.identity != null) {
-            var player = conn.identity.GetComponent<NetworkRoomPlayerLobby>();
-            RoomPlayers.Remove(player);
+            var player = conn.identity.GetComponent<GameObject>();
+            Debug.Log("Disconnecting player...");
+            //LobbyPlayers.Remove(player);
             NotifyPlayersOfReadyState();
         }
 
@@ -137,22 +94,30 @@ public class MyNetworkManager : NetworkManager
     public override void OnStopServer()
     {
         OnServerStopped?.Invoke();
-        RoomPlayers.Clear();
+        LobbyPlayers.Clear();
     }
 
     public void NotifyPlayersOfReadyState()
     {
-        foreach (var player in RoomPlayers) {
+        Debug.Log("Notifying player of ready states...");
+        foreach (var player in LobbyPlayers) {
             player.HandleReadyToStart(IsReadyToStart());
         }
     }
 
     private bool IsReadyToStart()
     {
-        if (numPlayers < minPlayers) { return false; }
+        if (numPlayers < minPlayers) {
+            Debug.Log("Not enought players to start.");
+            return false;
+        }
 
-        foreach (var player in RoomPlayers) {
-            if (!player.IsReady) { return false; }
+        foreach (var player in LobbyPlayers) {
+            if (!player.IsReady) {
+                Debug.Log("A player is not ready.");
+                return false;
+            }
+            Debug.Log("Player is ready:" + player);
         }
 
         return true;
@@ -160,24 +125,26 @@ public class MyNetworkManager : NetworkManager
 
     public void StartGame()
     {
-        if (SceneManager.GetActiveScene().name == menuScene) {
-            if (!IsReadyToStart()) { return; }
-            mapHandler = new MapHandler(mapSet, numberOfRounds);
-            ServerChangeScene(mapHandler.NextMap);
+        if (SceneManager.GetActiveScene().path == "scene:Assets/Scenes/menu.unity") {
+            if (!IsReadyToStart()) {
+                Debug.Log("StartGame() Not ready to start.");
+                return;
+            }
+            ServerChangeScene("game");
         }
     }
 
     public override void ServerChangeScene(string newSceneName)
     {
         // From menu to game
-        if (SceneManager.GetActiveScene().name == menuScene && newSceneName.StartsWith("game"))
-        {
-            for (int i = RoomPlayers.Count - 1; i >= 0; i--) {
-                var conn = RoomPlayers[i].connectionToClient;
+        if (SceneManager.GetActiveScene().path == "scene:Assets/Scenes/menu.unity" && newSceneName.StartsWith("game")) {
+            Debug.Log("Instanciating players for game.");
+            for (int i = LobbyPlayers.Count - 1; i >= 0; i--) {
+                var conn = LobbyPlayers[i].connectionToClient;
                 //var gameplayerInstance = Instantiate(gamePlayerPrefab);
-                //gameplayerInstance.SetDisplayName(RoomPlayers[i].DisplayName);
-                //NetworkServer.Destroy(conn.identity.gameObject);
-                //NetworkServer.ReplacePlayerForConnection(conn, gameplayerInstance.gameObject);
+                //gameplayerInstance.SetDisplayName(LobbyPlayers[i].DisplayName);
+                //NetworkServer.Destroy(conn.identity.GameObject); // keep ? see https://stackoverflow.com/questions/62458966/why-does-the-host-player-not-have-authority-to-send-server-command-unity-mi
+                //NetworkServer.ReplacePlayerForConnection(conn, gameplayerInstance);
             }
         }
         base.ServerChangeScene(newSceneName);
@@ -186,11 +153,9 @@ public class MyNetworkManager : NetworkManager
     public override void OnServerSceneChanged(string sceneName)
     {
         if (sceneName.StartsWith("game")) {
-            //GameObject playerSpawnSystemInstance = Instantiate(playerSpawnSystem);
-            //NetworkServer.Spawn(playerSpawnSystemInstance);
-
-            //GameObject roundSystemInstance = Instantiate(roundSystem);
-            //NetworkServer.Spawn(roundSystemInstance);
+            Debug.Log("OnServerSceneChanged() called");
+            GameObject playerSpawnSystemInstance = Instantiate(playerSpawnSystem);
+            NetworkServer.Spawn(playerSpawnSystemInstance);
         }
     }
 

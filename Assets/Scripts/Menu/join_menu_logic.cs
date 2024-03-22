@@ -74,7 +74,7 @@ public class join_menu_logic : MonoBehaviour
         return true;
     }
 
-    string set_ip(string ip)
+    string check_ip(string ip)
     {
         if (error_code != Error.NONE && error_code != Error.IP) {
             return "";
@@ -99,7 +99,7 @@ public class join_menu_logic : MonoBehaviour
         return ip;
     }
 
-    int set_port(string port_str)
+    int check_port(string port_str)
     {
         int port;
 
@@ -122,7 +122,7 @@ public class join_menu_logic : MonoBehaviour
         return port;
     }
 
-    string set_username(string username)
+    string check_username(string username)
     {
         if (error_code != Error.NONE && error_code != Error.USERNAME) {
             return "";
@@ -143,7 +143,7 @@ public class join_menu_logic : MonoBehaviour
         return username;
     }
 
-    bool set_host(bool is_host)
+    bool check_host(bool is_host)
     {
         if (is_host) {
             PlayerPrefs.SetString("is_host", "true");
@@ -159,17 +159,16 @@ public class join_menu_logic : MonoBehaviour
         if (error_code != Error.NONE && error_code != Error.PASSWORD_FORMAT) {
             return "";
         }
-        string hashedPassword = password;
-        return hashedPassword;
+        string hashed_password = password;
+        return hashed_password;
     }
 
     public void join_button()
     {
-        Debug.Log("Joining game...");
-        bool is_host = set_host(false);
-        string ip = set_ip(input_field_ip.GetComponent<InputField>().text);
-        int port = set_port(input_field_port.GetComponent<InputField>().text);
-        string username = set_username(input_field_username.GetComponent<InputField>().text);
+        bool is_host = check_host(false);
+        string ip = check_ip(input_field_ip.GetComponent<InputField>().text);
+        int port = check_port(input_field_port.GetComponent<InputField>().text);
+        string username = check_username(input_field_username.GetComponent<InputField>().text);
         string passwordHashed = hash_password(input_field_password.GetComponent<InputField>().text);
 
         switch (error_code)
@@ -192,17 +191,20 @@ public class join_menu_logic : MonoBehaviour
             default:
                 text_error.active = false;
                 gameObject.active = false;
-                JoinLobby(is_host, ip, port, username, passwordHashed);
+                join_lobby(is_host, ip, port, username, passwordHashed);
                 lobby_menu.active = true;
                 error_code = Error.NONE;
                 break;
         }
     }
 
-    public void JoinLobby(bool host, string ip, int port, string username, string passwordHashed)
+    private void join_lobby(bool host, string ip, int port, string username, string passwordHashed)
     {
+        Debug.Log("Joining game...");
         networkManager.networkAddress = ip;
         //networkManager.networkPort = port;
+
+        // Attention telepathy transport sur le MyNetworkMananger pas kcp ?
 
         //NetworkManager networkManager = FindObjectOfType<NetworkManager>();
         //KcpTransport kcpTransport = networkManager.GetComponent<KcpTransport>();
@@ -213,6 +215,7 @@ public class join_menu_logic : MonoBehaviour
         //else {
         //    Debug.LogWarning("KCP Transport component not found on NetworkManager.");
         //}
+        Debug.Log("Starting as client...");
         networkManager.StartClient();
     }
 }

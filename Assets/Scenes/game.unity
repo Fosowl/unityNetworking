@@ -27057,7 +27057,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1884066084654045317, guid: 5e77d823448aad846a62f89958646765, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1884066084654045562, guid: 5e77d823448aad846a62f89958646765, type: 3}
       propertyPath: onlineScene
