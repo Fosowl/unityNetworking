@@ -9,7 +9,7 @@ public class settings_menu_logic : MonoBehaviour
     public void back_button()
     {
         gameObject.SetActive(false);
-        main_menu.active = true;
+        main_menu.SetActive(true);
     }
 
 }

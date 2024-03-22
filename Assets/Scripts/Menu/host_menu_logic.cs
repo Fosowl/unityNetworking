@@ -35,19 +35,19 @@ public class host_menu_logic : MonoBehaviour
 
     void Start()
     {
-        text_error.active = false;
+        text_error.SetActive(false);
     }
 
     public void back_button()
     {
         gameObject.SetActive(false);
-        main_menu.active = true;
+        main_menu.SetActive(true);
     }
 
 
     void fill_error(string error)
     {
-        text_error.active = true;
+        text_error.SetActive(true);
         text_error.GetComponent<Text>().text = error;
     }
 
@@ -168,9 +168,9 @@ public class host_menu_logic : MonoBehaviour
                 fill_error("Invalid MAX PLAYERS");
                 break;
             default:
-                text_error.active = false;
+                text_error.SetActive(false);
                 gameObject.SetActive(false);
-                lobby_menu.active = true;
+                lobby_menu.SetActive(true);
                 error_code = Error.NONE;
                 Debug.Log("Hosting game...");
                 host_lobby(max_players, port, username, password);

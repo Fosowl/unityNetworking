@@ -7,12 +7,12 @@ public class pause_menu_logic : MonoBehaviour
 {
     void Start()
     {
-        gameObject.active = false;
+        gameObject.SetActive(false);
     }
 
     public void resume_button()
     {
-        gameObject.active = false;
+        gameObject.SetActive(false);
     }
 
     public void back_to_menu_button()

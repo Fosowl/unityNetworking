@@ -12,7 +12,7 @@ public class canvas_check_pause : MonoBehaviour
     void LateUpdate()
     {
         if (Input.GetKeyDown(KeyCode.Escape)) {
-            pause_menu.active = true;
+            pause_menu.SetActive(true);
         }
     }
 }

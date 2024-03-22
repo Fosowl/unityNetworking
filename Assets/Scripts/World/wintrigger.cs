@@ -16,6 +16,6 @@ public class wintrigger : MonoBehaviour
         if (other.tag != "PlayerMain") {
             return;
         }
-        winmenu.active = true;
+        winmenu.SetActive(true);
     }
 }
