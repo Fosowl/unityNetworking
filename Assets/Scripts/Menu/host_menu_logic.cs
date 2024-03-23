@@ -7,7 +7,6 @@ using UnityEngine.SceneManagement;
 public class host_menu_logic : MonoBehaviour
 {
     // menu
-    public GameObject lobby_menu;
     public GameObject main_menu;
     // field
     public GameObject input_field_password;
@@ -170,9 +169,7 @@ public class host_menu_logic : MonoBehaviour
             default:
                 text_error.SetActive(false);
                 gameObject.SetActive(false);
-                lobby_menu.SetActive(true);
                 error_code = Error.NONE;
-                Debug.Log("Hosting game...");
                 host_lobby(max_players, port, username, password);
                 break;
         }
@@ -180,6 +177,7 @@ public class host_menu_logic : MonoBehaviour
 
     private void host_lobby(int max_players, int port, string username, string password)
     {
+        Debug.Log("Hosting game...");
         // that's it ? check working
         // Attention telepathy transport sur le MyNetworkMananger pas kcp ?
 

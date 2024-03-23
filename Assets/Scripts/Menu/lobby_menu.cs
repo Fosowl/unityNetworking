@@ -9,20 +9,28 @@ using UnityEngine.SceneManagement;
 public class lobby_menu : NetworkBehaviour
 {
     // public
-    //public GameObject lobbyPlayerPrefab;
     [Header("UI")]
+    [SerializeField] private GameObject lobbyUI = null;
     public TMP_Text[] playerNameTexts = new TMP_Text[4];
     public Button startGameButton = null;
-    public GameObject join_menu;
-    public GameObject host_menu;
+    private GameObject join_menu;
+    private GameObject host_menu;
+    private GameObject parent;
 
-    [SyncVar]
-    public string DisplayName = "You name...";
+    public string DisplayName = "martin";
     public bool IsReady = false;
     public bool is_host;
 
+    private bool isLeader;
+    public bool IsLeader
+    {
+        set
+        {
+            isLeader = value;
+            startGameButton.gameObject.SetActive(value);
+        }
+    }
     // private
-    private string username;
     private MyNetworkManager room;
     private MyNetworkManager Room
     {
@@ -35,15 +43,25 @@ public class lobby_menu : NetworkBehaviour
         }
     }
 
+    private RectTransform rectTransform;
     void Start()
     {
+        GameObject parent = GameObject.FindWithTag("ParentCanvas");
+        this.transform.SetParent(parent.transform);
+
         is_host = PlayerPrefs.GetString("is_host") == "true";
-        username = PlayerPrefs.GetString("username");
         Debug.Log("Is host?: " + is_host);
+
+        rectTransform = GetComponent<RectTransform>();
+        rectTransform.anchoredPosition = new Vector2(150f, 45f);
+        string username = PlayerPrefs.GetString("username");
+        Debug.Log("Setting username:" + username);
+        CmdSetDisplayName(username);
     }
 
     public void back_button()
     {
+        Debug.Log("Back button pressed.");
         gameObject.SetActive(false);
         if (is_host) {
             Debug.Log("Host is leaving lobby...");
@@ -57,27 +75,21 @@ public class lobby_menu : NetworkBehaviour
 
     public override void OnStartAuthority()
     {
-        CmdSetDisplayName(DisplayName);
+        lobbyUI.SetActive(true);
     }
 
     public override void OnStartClient()
     {
-        Room.LobbyPlayers.Add(this);
+        Room.RoomPlayers.Add(this);
         Debug.Log("Client start.. Room player added !");
         UpdateDisplay();
     }
 
     public override void OnStopClient()
     {
-        Room.GamePlayers.Remove(this);
+        Room.RoomPlayers.Remove(this);
         Debug.Log("Client stopped.. Room player removed !");
         UpdateDisplay();
-    }
-
-    [Server]
-    public void SetDisplayName(string displayName)
-    {
-        this.DisplayName = displayName;
     }
 
     public void HandleReadyStatusChanged(bool oldValue, bool newValue) => UpdateDisplay();
@@ -85,9 +97,9 @@ public class lobby_menu : NetworkBehaviour
 
     private void UpdateDisplay()
     {
-        if (!isLocalPlayer) {
-            foreach (var player in Room.GamePlayers) {
-                if (player.isLocalPlayer) {
+        if (!isOwned) {
+            foreach (var player in Room.RoomPlayers) {
+                if (player.isOwned) {
                     player.UpdateDisplay();
                     break;
                 }
@@ -96,13 +108,13 @@ public class lobby_menu : NetworkBehaviour
         }
 
         for (int i = 0; i < playerNameTexts.Length; i++) {
-            playerNameTexts[i].text = "Waiting For Player " + i;
+            playerNameTexts[i].text = "Waiting For Player " + i + "...";
         }
 
-        for (int i = 0; i < Room.GamePlayers.Count; i++) {
-            playerNameTexts[i].text = Room.GamePlayers[i].IsReady ?
-                Room.GamePlayers[i].DisplayName + "<color=green>Ready</color>" :
-                Room.GamePlayers[i].DisplayName + "<color=red>Not Ready</color>";
+        for (int i = 0; i < Room.RoomPlayers.Count; i++) {
+            playerNameTexts[i].text = Room.RoomPlayers[i].IsReady ?
+                Room.RoomPlayers[i].DisplayName + "    <color=green>Ready</color>" :
+                Room.RoomPlayers[i].DisplayName + "    <color=red>Not Ready</color>";
         }
     }
 
@@ -120,32 +132,64 @@ public class lobby_menu : NetworkBehaviour
     {
         Debug.Log("Setting name...");
         DisplayName = displayName;
+        UpdateDisplay();
+        RpcSetDisplayNameOnClient(displayName);
+    }
+
+    [ClientRpc]
+    private void RpcSetDisplayNameOnClient(string displayName)
+    {
+        if (!isServer) {
+            Debug.Log("Setting name on client...");
+            DisplayName = displayName;
+            UpdateDisplay();
+        }
     }
 
     [Command]
     public void CmdReadyUp()
     {
-        //if (!isLocalPlayer) {
-            //Debug.Log("CmdReadyUp not local, skip..");
-            //return;
-        //}
         IsReady = !IsReady;
+
         Debug.Log("Notifying of ready state.");
         Room.NotifyPlayersOfReadyState();
+        UpdateDisplay();
+        RpcReadyUp();
+    }
+
+    [ClientRpc]
+    private void RpcReadyUp()
+    {
+        if (!isServer) {
+            IsReady = !IsReady;
+
+            Debug.Log("Notifying of ready state on client...");
+            UpdateDisplay();
+        }
     }
 
     [Command]
     public void CmdStartGame()
     {
-        //if (!isLocalPlayer) {
-            //Debug.Log("CmdStartGame not local, skip");
+        // this cause error ? 
+        //if (Room.GamePlayers[0].connectionToClient != connectionToClient) {
+            //Debug.Log("Wrong connection in CmdStartGame.");
             //return;
         //}
-        if (Room.GamePlayers[0].connectionToClient != connectionToClient) {
-            Debug.Log("Wrong connection in CmdStartGame.");
+
+        Debug.Log("Starting game...");
+        RpcStartGame();
+        if (!isServer) {
             return;
         }
-        Debug.Log("Starting game...");
-        Room.StartGame(); // scene change handled byStartGame  in MyNetworkmanager
+        Room.StartGame(); // scene change handled byStartGame  in MyNetworkmanager        }
     }
+
+        [ClientRpc]
+        private void RpcStartGame()
+        {
+            if (!isServer) {
+                return;
+            }
+        }
 }

@@ -11,7 +11,6 @@ public class join_menu_logic : MonoBehaviour
 {
     // menu
     public GameObject main_menu;
-    public GameObject lobby_menu;
     // field
     public GameObject input_field_ip;
     public GameObject input_field_port;
@@ -192,7 +191,6 @@ public class join_menu_logic : MonoBehaviour
                 text_error.SetActive(false);
                 gameObject.SetActive(false);
                 join_lobby(is_host, ip, port, username, passwordHashed);
-                lobby_menu.SetActive(true);
                 error_code = Error.NONE;
                 break;
         }
