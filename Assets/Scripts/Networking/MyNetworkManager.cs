@@ -23,6 +23,8 @@ public class MyNetworkManager : NetworkManager
     public List<lobby_menu> RoomPlayers { get; } = new List<lobby_menu>();
     public List<gamePlayer> GamePlayers { get; } = new List<gamePlayer>();
 
+    private Vector3 spawnPosition = new Vector3(58f, 11f, 60f);
+
     public override void OnStartServer() => spawnPrefabs = Resources.LoadAll<GameObject>("SpawnablePrefabs").ToList();
 
     public override void OnStartClient() => spawnPrefabs = Resources.LoadAll<GameObject>("SpawnablePrefabs").ToList();
@@ -48,6 +50,10 @@ public class MyNetworkManager : NetworkManager
             conn.Disconnect();
             return;
         }
+        float x = spawnPosition.x + 2;
+        float y = spawnPosition.y;
+        float z = spawnPosition.z - 1;
+        spawnPosition = new Vector3(x, y, z);
     }
 
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
@@ -132,7 +138,7 @@ public class MyNetworkManager : NetworkManager
                     continue;
                 }
                 var conn = roomPlayersCopy[i].connectionToClient;
-                var gameplayerInstance = Instantiate(gamePlayerPrefab);
+                var gameplayerInstance = Instantiate(gamePlayerPrefab, spawnPosition, Quaternion.identity);
                 gameplayerInstance.SetDisplayName(roomPlayersCopy[i].DisplayName);
                 //NetworkServer.Destroy(conn.identity.gameObject);
                 NetworkServer.ReplacePlayerForConnection(conn, gameplayerInstance.gameObject);

@@ -39,22 +39,31 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
         private void FixedUpdate()
         {
-            if (!isLocalPlayer) {
+            if (!isLocalPlayer)
+            {
                 Debug.Log("Warning: Player not on network, comment code if testing without network.");
                 return;
             }
+            float h = 0f;
+            float v = 0f;
+            if (Input.GetKey(KeyCode.LeftArrow))
+                h = -1f;
+            else if (Input.GetKey(KeyCode.RightArrow))
+                h = 1f;
+            if (Input.GetKey(KeyCode.UpArrow))
+                v = 1f;
+            else if (Input.GetKey(KeyCode.DownArrow))
+                v = -1f;
 
-            float h = Input.GetAxis("Horizontal");
-            float v = Input.GetAxis("Vertical");
+            Vector3 moveDirection = transform.forward * v + transform.right * h;
 
-            if (m_Cam != null) {
-                m_CamForward = Vector3.Scale(m_Cam.forward, new Vector3(1, 0, 1)).normalized;
-                m_Move = v*m_CamForward + h*m_Cam.right;
-            } else {
-                m_Move = v*Vector3.forward + h*Vector3.right;
-            }
-            m_Character.Move(m_Move, false, m_Jump);
+            if (moveDirection.magnitude > 1f)
+                moveDirection.Normalize();
+
+            m_Character.Move(moveDirection, false, m_Jump);
             m_Jump = false;
         }
+
     }
+
 }
