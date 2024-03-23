@@ -1116,7 +1116,7 @@ MonoBehaviour:
   - {fileID: 4517397223070008396}
   - {fileID: 7965487665806493879}
   startGameButton: {fileID: 2581081917134366679}
-  DisplayName: You name...
+  DisplayName: martin
   IsReady: 0
   is_host: 0
 --- !u!1 &4281657132123565614

@@ -23,7 +23,7 @@ public class MyNetworkManager : NetworkManager
     public List<lobby_menu> RoomPlayers { get; } = new List<lobby_menu>();
     public List<gamePlayer> GamePlayers { get; } = new List<gamePlayer>();
 
-    private Vector3 spawnPosition = new Vector3(58f, 11f, 60f);
+    private Vector3 spawnPosition = new Vector3(58f, 15f, 55f);
 
     public override void OnStartServer() => spawnPrefabs = Resources.LoadAll<GameObject>("SpawnablePrefabs").ToList();
 
@@ -50,9 +50,9 @@ public class MyNetworkManager : NetworkManager
             conn.Disconnect();
             return;
         }
-        float x = spawnPosition.x + 2;
+        float x = spawnPosition.x;
         float y = spawnPosition.y;
-        float z = spawnPosition.z - 1;
+        float z = spawnPosition.z + 5;
         spawnPosition = new Vector3(x, y, z);
     }
 

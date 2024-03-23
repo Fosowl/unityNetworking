@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+using Baruah.EncryptionSystem.Manager;
+
 public class host_menu_logic : MonoBehaviour
 {
     // menu
@@ -113,7 +115,6 @@ public class host_menu_logic : MonoBehaviour
             return "";
         }
         error_code = Error.NONE;
-        PlayerPrefs.SetString("username", username);
         return username;
     }
 
@@ -133,22 +134,20 @@ public class host_menu_logic : MonoBehaviour
         if (error_code != Error.NONE && error_code != Error.PASSWORD_FORMAT) {
             return "";
         }
-
-        // TODO: check password correct
         error_code = Error.NONE;
-        // TODO: encrypt password
-        string hash_password = password;
-        PlayerPrefs.SetString("password_client", hash_password);
-        return hash_password;
+        string hashed_password = EncyptionManager.manager.Encrypt<string>(password);
+        return hashed_password;
     }
 
     public void host_game_button()
     {
-        bool host = set_host(true);
+        set_host(true);
         int port = set_port(input_field_port.GetComponent<InputField>().text);
         string username = set_username(input_field_username.GetComponent<InputField>().text);
-        string password = set_password(input_field_password.GetComponent<InputField>().text);
-        int max_players = set_max_players(input_field_max_players.GetComponent<InputField>().text);
+        PlayerPrefs.SetString("username", username);
+        string passwordHashed = set_password(input_field_password.GetComponent<InputField>().text);
+        PlayerPrefs.SetString("password_host", passwordHashed);
+        set_max_players(input_field_max_players.GetComponent<InputField>().text);
         switch (error_code)
         {
             case Error.PORT:
@@ -170,26 +169,16 @@ public class host_menu_logic : MonoBehaviour
                 text_error.SetActive(false);
                 gameObject.SetActive(false);
                 error_code = Error.NONE;
-                host_lobby(max_players, port, username, password);
+                host_lobby(port);
                 break;
         }
     }
 
-    private void host_lobby(int max_players, int port, string username, string password)
+    private void host_lobby(int port)
     {
         Debug.Log("Hosting game...");
         // that's it ? check working
-        // Attention telepathy transport sur le MyNetworkMananger pas kcp ?
 
-        //NetworkManager networkManager = FindObjectOfType<NetworkManager>();
-        //KcpTransport kcpTransport = networkManager.GetComponent<KcpTransport>();
-        //if (kcpTransport != null) {
-        //    kcpTransport.Port = port;
-        //    Debug.Log("KCP Transport port changed to: " + kcpTransport.Port);
-        //}
-        //else {
-        //    Debug.LogWarning("KCP Transport component not found on NetworkManager.");
-        //}
         networkManager.StartHost();
     }
 }

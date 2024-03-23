@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using Baruah.EncryptionSystem.Manager;
 
 public class join_menu_logic : MonoBehaviour
 {
@@ -158,17 +158,18 @@ public class join_menu_logic : MonoBehaviour
         if (error_code != Error.NONE && error_code != Error.PASSWORD_FORMAT) {
             return "";
         }
-        string hashed_password = password;
+        string hashed_password = EncyptionManager.manager.Encrypt<string>(password);
         return hashed_password;
     }
 
     public void join_button()
     {
-        bool is_host = check_host(false);
+        check_host(false);
         string ip = check_ip(input_field_ip.GetComponent<InputField>().text);
         int port = check_port(input_field_port.GetComponent<InputField>().text);
-        string username = check_username(input_field_username.GetComponent<InputField>().text);
+        check_username(input_field_username.GetComponent<InputField>().text);
         string passwordHashed = hash_password(input_field_password.GetComponent<InputField>().text);
+        PlayerPrefs.SetString("password_client", passwordHashed);
 
         switch (error_code)
         {
@@ -190,29 +191,18 @@ public class join_menu_logic : MonoBehaviour
             default:
                 text_error.SetActive(false);
                 gameObject.SetActive(false);
-                join_lobby(is_host, ip, port, username, passwordHashed);
+                join_lobby(ip, port);
                 error_code = Error.NONE;
                 break;
         }
     }
 
-    private void join_lobby(bool host, string ip, int port, string username, string passwordHashed)
+    private void join_lobby(string ip, int port)
     {
         Debug.Log("Joining game...");
         networkManager.networkAddress = ip;
         //networkManager.networkPort = port;
 
-        // Attention telepathy transport sur le MyNetworkMananger pas kcp ?
-
-        //NetworkManager networkManager = FindObjectOfType<NetworkManager>();
-        //KcpTransport kcpTransport = networkManager.GetComponent<KcpTransport>();
-        //if (kcpTransport != null) {
-        //    kcpTransport.Port = port;
-        //    Debug.Log("KCP Transport port changed to: " + kcpTransport.Port);
-        //}
-        //else {
-        //    Debug.LogWarning("KCP Transport component not found on NetworkManager.");
-        //}
         Debug.Log("Starting as client...");
         networkManager.StartClient();
     }
