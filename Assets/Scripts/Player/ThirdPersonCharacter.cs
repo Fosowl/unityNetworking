@@ -25,7 +25,9 @@ namespace UnityStandardAssets.Characters.ThirdPerson
         float m_CapsuleHeight;
         Vector3 m_CapsuleCenter;
         CapsuleCollider m_Capsule;
-        bool m_Crouching;    
+        bool m_Crouching;
+        [SerializeField] private GameObject deadtext;
+        [SerializeField] private GameObject skin;
 
         void Start()
         {
@@ -111,6 +113,15 @@ namespace UnityStandardAssets.Characters.ThirdPerson
                 m_IsGrounded = false;
                 m_GroundNormal = Vector3.up;
                 m_Animator.applyRootMotion = false;
+            }
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.CompareTag("damage"))
+            {
+                deadtext.SetActive(true);
+                skin.SetActive(false);
             }
         }
     }

@@ -11,6 +11,7 @@ TagManager:
   - PlayerMain
   - localVarObj
   - ParentCanvas
+  - Lose
   layers:
   - Default
   - TransparentFX

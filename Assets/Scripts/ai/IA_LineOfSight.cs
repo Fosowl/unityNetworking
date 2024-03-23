@@ -25,6 +25,9 @@ public class IA_LineOfSight : MonoBehaviour
     [SerializeField] private float attackDistance = 3.5f;
     [SerializeField] private float loseDistance = 14f;
 
+    [SerializeField] private GameObject hitbox1;
+    [SerializeField] private GameObject hitbox2;
+
     bool tmp = false;
 
     private void Awake()
@@ -33,6 +36,8 @@ public class IA_LineOfSight : MonoBehaviour
         agent = gameObject.GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
         animator.Play("root|Anim_monster_scavenger_Idle1");
+        hitbox1.SetActive(false);
+        hitbox2.SetActive(false);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -62,6 +67,8 @@ public class IA_LineOfSight : MonoBehaviour
             StopCoroutine(detect_player);
             agent.ResetPath();
             isChasing = false;
+            hitbox1.SetActive(false);
+            hitbox2.SetActive(false);
             tmp = false;
         }
     }
@@ -114,6 +121,8 @@ public class IA_LineOfSight : MonoBehaviour
             animator.Play("root|Anim_monster_scavenger_attack");
             tmp = false;
             agent.isStopped = true;
+            hitbox1.SetActive(true);
+            hitbox2.SetActive(true);
         }
         else
         {
@@ -121,6 +130,8 @@ public class IA_LineOfSight : MonoBehaviour
             {
                 animator.Play("root|Anim_monster_scavenger_walk");
                 tmp = true;
+                hitbox1.SetActive(false);
+                hitbox2.SetActive(false);
             }
             agent.isStopped = false;
         }

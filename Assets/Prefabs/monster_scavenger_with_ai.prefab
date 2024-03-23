@@ -886,8 +886,8 @@ GameObject:
   - component: {fileID: 588807069402728919}
   - component: {fileID: 2063509861064565677}
   m_Layer: 0
-  m_Name: Hitbox
-  m_TagString: Untagged
+  m_Name: Hitbox1
+  m_TagString: damage
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1611,8 +1611,8 @@ GameObject:
   - component: {fileID: 89629739355417906}
   - component: {fileID: 2255827264449730680}
   m_Layer: 0
-  m_Name: Hitbox
-  m_TagString: Untagged
+  m_Name: Hitbox2
+  m_TagString: damage
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2025,6 +2025,8 @@ MonoBehaviour:
   isChasing: 0
   attackDistance: 3.5
   loseDistance: 12
+  hitbox1: {fileID: 6302778989748684567}
+  hitbox2: {fileID: 8457399125010393980}
 --- !u!195 &7100686145873724626
 NavMeshAgent:
   m_ObjectHideFlags: 0
