@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine.UI;
 using Mirror;
 
-public class doorLogic : MonoBehaviour
+public class doorLogic : NetworkBehaviour
 {
     public TMP_Text textBox;
     public bool requireCode;
@@ -23,6 +23,7 @@ public class doorLogic : MonoBehaviour
         textBox.text = "";
     }
 
+    [ServerCallback]
     void OnTriggerEnter(Collider other) {
         if (other.tag != "PlayerMain") {
             return;
@@ -32,6 +33,7 @@ public class doorLogic : MonoBehaviour
         onDoor = true;
     }
 
+    [ServerCallback]
     void OnTriggerExit(Collider other) {
         textBox.text = "";
         onDoor = false;
@@ -68,6 +70,7 @@ public class doorLogic : MonoBehaviour
         }
     }
 
+    [Server]
     void pivotDoor() {
         if (isOpen) {
             gameObject.transform.Rotate(0, 270, 0);
